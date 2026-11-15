@@ -22,6 +22,7 @@ def add_range_details(prefix):
   network = ipaddress.ip_network(prefix['ip_prefix'])
   prefix['first_ip'] = str(network[0])
   prefix['last_ip'] = str(network[-1])
+  prefix['num_addresses'] = network.num_addresses
   return prefix
 
 
