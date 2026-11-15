@@ -33,4 +33,19 @@ def find_aws_ip(aws_ip_range_data, ip_to_find):
           if ipaddress.ip_address(ip_to_find) in ipaddress.ip_network(prefix['ip_prefix'])]
 
 
-sys.stdout.write(json.dumps(find_aws_ip(download_aws_ip_set(), sys.argv[1]), indent=2))
+def smallest_subnet(ips):
+  """Returns the smallest subnet that contains all the given IPv4 addresses."""
+  addresses = [ipaddress.ip_address(ip) for ip in ips]
+  for prefix_length in range(32, -1, -1):
+    network = ipaddress.ip_network(f"{addresses[0]}/{prefix_length}", strict=False)
+    if all(address in network for address in addresses):
+      return network
+
+
+if __name__ == '__main__':
+  if sys.argv[1] == '--subnet':
+    # Usage : python awsip.py --subnet 10.0.0.1 10.0.0.7 10.0.0.12
+    print(smallest_subnet(sys.argv[2:]))
+  else:
+    # Usage : python awsip.py 3.5.140.3
+    sys.stdout.write(json.dumps(find_aws_ip(download_aws_ip_set(), sys.argv[1]), indent=2))
